@@ -1268,6 +1268,17 @@ body::after {
             animation: none !important;
           }
         }
+/* entrance-animation safety net: killing the animation reverts elements
+   to their natural visible state (opacity 1, no transform). JS adds this
+   once the page is visible, so throttled fade-ins (background tab, bfcache)
+   can't leave hero/section content stuck at opacity 0. */
+html.anim-ready .avatar,
+html.anim-ready .wordmark,
+html.anim-ready .role,
+html.anim-ready .pitch,
+html.anim-ready .section {
+  animation: none;
+}
 @media (max-width: 520px) {
           .shell {
             padding: 16px 18px 80px;
@@ -2092,6 +2103,23 @@ body::after {
     </div>
 
     <script>
+      // entrance-animation safety net: guarantee hero/section content is
+      // visible even when fade-ins are throttled (background tab, bfcache)
+      (function () {
+        const root = document.documentElement;
+        const reveal = () => root.classList.add("anim-ready");
+        if (document.visibilityState === "visible") {
+          // let the fade-ins play, then pin the final state
+          window.addEventListener("load", () => setTimeout(reveal, 1200));
+        } else {
+          reveal(); // loaded hidden: skip the fade, just show content
+        }
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") reveal();
+        });
+        window.addEventListener("pageshow", reveal);
+      })();
+
       // statusline clock
       const clock = /** @type {HTMLElement} */ (document.getElementById("utc"));
       const tzEl = /** @type {HTMLSpanElement} */ (
