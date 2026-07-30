@@ -6,6 +6,15 @@
     <title>~/aejkatappaja · full-stack engineer &amp; OSS maintainer</title>
     <meta name="author" content="Aejkatappaja" />
     <meta name="theme-color" content="#0e1018" />
+    <script>
+      // Runs before first paint on purpose: applying the stored colorscheme from
+      // the script at the end of body would repaint the whole page in view.
+      // sora is the default, so the attribute is only ever set for cendre.
+      try {
+        var saved = localStorage.getItem("theme");
+        if (saved === "cendre") document.documentElement.dataset.theme = saved;
+      } catch (e) {}
+    </script>
     <meta
       name="description"
       content="Aejkatappaja, full-stack engineer &amp; OSS maintainer. TypeScript, Go, Web Components. Creator of the official Qwik DevTools, ex-Toucan."
@@ -82,7 +91,6 @@
     <style>
 /* cascade layers: predictable precedence, reset < base < components */
 @layer reset, base, components;
-/* sora palette (design tokens) */
 :root {
   --bg: oklch(17.49% 0.0169 273.63);
   --bg-float: oklch(15.51% 0.0133 270.44);
@@ -97,7 +105,6 @@
   --cyan: oklch(79.39% 0.0795 221.13);
   --purple: oklch(73.92% 0.0814 297.48);
   --sage: oklch(78.31% 0.0813 153.18);
-  --rose: oklch(71.97% 0.079 6.9);
   --gold: oklch(79.24% 0.0884 86.78);
   --peach: oklch(75.97% 0.0643 60.27);
   --teal: oklch(73.71% 0.0667 185.93);
@@ -106,9 +113,46 @@
           "TX-02", "JetBrainsMono Nerd Font Mono", "JetBrains Mono", "SF Mono",
           "Berkeley Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
   --line: 1.55;
+  --r-sm: 2px;
   --r: 4px;
+  --r-lg: 8px;
   --t: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+    /* ---- cendre. https://github.com/Aejkatappaja/cendre ----
+       Ground hue 43, the ash bed under a 1300 K flame, at the hard depth the
+       colorscheme defaults to. Every accent below is one of cendre's five
+       pigments, whose hues were computed from emission lines in a wood fire
+       rather than chosen, so nothing here is a new colour.
+
+       Two notes on the mapping. cendre has five pigments for seven accent slots,
+       so ember carries both section titles and links, which is what cendre's own
+       page does. And --fg-bright collapses onto --fg, because cendre's body ink
+       is already the brightest step it has: in this theme emphasis is carried by
+       weight, not by an extra level of brightness. */
+    :root[data-theme="cendre"] {
+      --bg: #171311;
+      --bg-float: #0f0c0a;
+      --bg-elev: #201b19;
+      --bg-cursor: #2a2422;
+      --bg-sel: #2f1e17;
+      --border: #362f2c;
+      --fg: #e6d5c2;
+      --fg-dim: #a09384;
+      --fg-bright: #e6d5c2;
+      --comment: #73665b;
+      --cyan: #ea9875;   /* ember  · blackbody 1300 K · the load-bearing accent */
+      --gold: #fcba81;   /* brass  · sodium D 589 nm  · wordmark, stars, badges */
+      --purple: #d1766e; /* cinder · CaOH band 622 nm · key hints, labels       */
+      --sage: #99af6b;   /* sap    · C2 Swan 563 nm   · ok, official            */
+      --teal: #4e89a2;   /* frost  · C2 Swan 474 nm   · bench tag              */
+      --peach: #ea9875;  /* ember, same as cyan by design                       */
+      --steel: #a09384;  /* fg_dim · meta, chips, secondary links               */
+      /* cendre is square everywhere, so the corners go */
+      --r-sm: 0;
+      --r: 0;
+      --r-lg: 0;
+    }
 @layer reset {
 * {
   box-sizing: border-box;
@@ -161,7 +205,7 @@ a:focus-visible,
         button:focus-visible {
   outline: 2px solid var(--cyan);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: var(--r-sm);
 }
 /* visually hidden (screen-reader only) */
 .sr-only {
@@ -175,7 +219,6 @@ a:focus-visible,
   white-space: nowrap;
   border: 0;
 }
-/* skip link */
 .skip-link {
   position: absolute;
   left: 12px;
@@ -206,7 +249,6 @@ ul.chips {
 }
 }
 @layer components {
-/* grain overlay */
 body::before {
   content: "";
   position: fixed;
@@ -217,7 +259,6 @@ body::before {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   mix-blend-mode: overlay;
 }
-/* scanline overlay */
 body::after {
   content: "";
   position: fixed;
@@ -232,7 +273,6 @@ body::after {
             rgba(255, 255, 255, 0.012) 3px
           );
 }
-/* ambient glow blobs */
 .glow {
   position: fixed;
   pointer-events: none;
@@ -265,7 +305,6 @@ body::after {
   background: var(--gold);
   opacity: 0.04;
 }
-/* layout */
 .shell {
   position: relative;
   z-index: 1;
@@ -277,7 +316,6 @@ body::after {
   gap: 40px;
   min-height: 100vh;
 }
-/* top statusline (sticky) */
 .topbar {
   position: sticky;
   top: 0;
@@ -360,7 +398,7 @@ body::after {
   font-size: 13px;
   line-height: 1.4;
   padding: 2px 9px;
-  border-radius: 2px;
+  border-radius: var(--r-sm);
   cursor: pointer;
   transition:
             border-color var(--t),
@@ -369,6 +407,36 @@ body::after {
 .nav-toggle:hover {
   border-color: var(--cyan);
   color: var(--fg-bright);
+}
+
+/* the colorscheme switch, on the nav toggle's metrics, so the two read as one
+   row of controls. the active name sits in the accent: the button shows a live
+   value rather than a label. */
+.theme-toggle {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--fg-dim);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition:
+    border-color var(--t),
+    color var(--t);
+}
+.theme-toggle #themeName {
+  color: var(--cyan);
+}
+.theme-toggle:hover {
+  border-color: var(--cyan);
+  color: var(--fg);
+}
+/* mobile-only icon: a contrast glyph replaces the theme name on narrow screens */
+.theme-toggle .tt-ico {
+  display: none;
+  color: var(--cyan);
 }
 @media (max-width: 760px) {
           .topbar .right .utc-wrap {
@@ -379,6 +447,12 @@ body::after {
           }
           .nav-toggle {
             display: inline-flex;
+          }
+          .theme-toggle .tt-name {
+            display: none;
+          }
+          .theme-toggle .tt-ico {
+            display: inline;
           }
           .topbar nav {
             display: none;
@@ -423,7 +497,6 @@ body::after {
             display: none;
           }
         }
-/* hero */
 .hero {
   padding-top: 20px;
 }
@@ -436,7 +509,7 @@ body::after {
   flex: none;
   width: 96px;
   height: 96px;
-  border-radius: 8px;
+  border-radius: var(--r-lg);
   border: 1px solid var(--border);
   padding: 3px;
   background: var(--bg-elev);
@@ -644,7 +717,6 @@ body::after {
   color: var(--fg-dim);
   text-align: right;
 }
-/* about */
 .about-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
@@ -690,7 +762,6 @@ body::after {
             grid-template-columns: 1fr;
           }
         }
-/* experience timeline */
 .xp {
   display: flex;
   flex-direction: column;
@@ -745,7 +816,7 @@ body::after {
   text-transform: uppercase;
   color: var(--gold);
   border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
-  border-radius: 2px;
+  border-radius: var(--r-sm);
   padding: 1px 6px;
   vertical-align: middle;
 }
@@ -831,11 +902,10 @@ body::after {
   color: var(--steel);
   background: var(--bg-float);
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: var(--r-sm);
   padding: 2px 7px;
   letter-spacing: 0.2px;
 }
-/* projects tiles */
 .tiles {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -956,7 +1026,6 @@ body::after {
             align-self: flex-end;
           }
         }
-/* writing */
 .posts {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -997,7 +1066,6 @@ body::after {
             grid-template-columns: 1fr;
           }
         }
-/* stack */
 .stack-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1027,7 +1095,6 @@ body::after {
             grid-template-columns: 1fr;
           }
         }
-/* bookshelf */
 .books {
   list-style: none;
   margin: 0;
@@ -1083,7 +1150,6 @@ body::after {
             grid-template-columns: 1fr;
           }
         }
-/* contact */
 .contact {
   padding: 26px 24px;
   text-align: center;
@@ -1107,7 +1173,6 @@ body::after {
             justify-content: center;
           }
         }
-/* footer */
 .footer {
   position: relative;
   margin-top: auto;
@@ -1150,15 +1215,14 @@ body::after {
   color: var(--steel);
   font-weight: 400;
 }
-.footer .sora-link {
+.footer .theme-link {
   color: var(--gold);  cursor: pointer;
   transition: color var(--t);
 }
-.footer .sora-link:hover {
+.footer .theme-link:hover {
   color: var(--fg-bright);
   text-decoration: underline;
 }
-/* keyboard hint toast */
 .kbd-hint {
   position: fixed;
   z-index: 60;
@@ -1201,7 +1265,7 @@ body::after {
   color: var(--purple);
   background: var(--bg-float);
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: var(--r-sm);
   padding: 1px 5px;
   margin-right: 2px;
 }
@@ -1306,7 +1370,6 @@ html.anim-ready .section {
     <div class="glow glow-3"></div>
 
     <div class="shell" id="top">
-      <!-- top statusline / nav -->
       <header class="topbar">
         <div class="left">
           <span class="crumb" id="crumb" aria-hidden="true"
@@ -1323,6 +1386,19 @@ html.anim-ready .section {
         </div>
         <div class="right">
           <button
+            class="theme-toggle"
+            id="themeToggle"
+            data-key="t"
+            aria-label="colorscheme: sora, press to switch"
+            title="switch colorscheme"
+          >
+            [<span class="tt-name" id="themeName">sora</span><span
+              class="tt-ico"
+              aria-hidden="true"
+              >◐</span
+            >]
+          </button>
+          <button
             class="nav-toggle"
             id="navToggle"
             aria-label="menu"
@@ -1338,11 +1414,11 @@ html.anim-ready .section {
       </header>
 
       <main id="main">
-        <!-- hero -->
         <section class="hero">
           <div class="hero-top">
             <img
               class="avatar"
+              id="avatar"
               src="assets/avatar.webp"
               alt="aejkatappaja avatar"
               width="96"
@@ -1388,7 +1464,6 @@ html.anim-ready .section {
           </p>
         </section>
 
-        <!-- about -->
         <section class="section" id="about" aria-labelledby="about-h">
           <div class="sec-head">
             <h2 class="title" id="about-h" aria-label="About">
@@ -1430,7 +1505,6 @@ html.anim-ready .section {
           </div>
         </section>
 
-        <!-- experience -->
         <section
           class="section"
           id="experience"
@@ -1677,7 +1751,6 @@ html.anim-ready .section {
           </div>
         </section>
 
-        <!-- projects -->
         <section
           class="section"
           id="projects"
@@ -1940,7 +2013,6 @@ html.anim-ready .section {
           </div>
         </section>
 
-        <!-- writing -->
         <section
           class="section"
           id="writing"
@@ -2033,7 +2105,6 @@ html.anim-ready .section {
           </ul>
         </section>
 
-        <!-- stack -->
         <section class="section" id="stack" aria-labelledby="stack-h">
           <div class="sec-head">
             <h2 class="title" id="stack-h" aria-label="Stack">
@@ -2096,7 +2167,6 @@ html.anim-ready .section {
           </div>
         </section>
 
-        <!-- bookshelf -->
         <section
           class="section"
           id="bookshelf"
@@ -2120,7 +2190,6 @@ html.anim-ready .section {
           </ul>
         </section>
 
-        <!-- contact -->
         <section
           class="section"
           id="contact"
@@ -2174,15 +2243,15 @@ html.anim-ready .section {
         </section>
       </main>
 
-      <!-- footer -->
       <footer class="footer">
         <div class="left">
           <span class="ok">● ready</span>
           <span
             >theme
             <a
-              class="sora-link"
-              href="https://github.com/Aejkatappaja/sora"
+              class="theme-link"
+              id="themeSite"
+              href="https://soratheme.com/"
               target="_blank"
               rel="noopener noreferrer"
               >sora</a
@@ -2228,7 +2297,6 @@ html.anim-ready .section {
         window.addEventListener("pageshow", reveal);
       })();
 
-      // statusline clock
       const clock = /** @type {HTMLElement} */ (document.getElementById("utc"));
       const tzEl = /** @type {HTMLSpanElement} */ (
         document.getElementById("tz")
@@ -2312,7 +2380,6 @@ html.anim-ready .section {
         a.appendChild(note);
       });
 
-      // keyboard hint toast: show once per session, auto-hide, dismissable
       (function () {
         const hint = /** @type {HTMLDivElement} */ (
           document.getElementById("kbdHint")
@@ -2345,7 +2412,6 @@ html.anim-ready .section {
         });
       })();
 
-      // mobile breadcrumb scroll-spy
       const crumb = /** @type {HTMLSpanElement} */ (
         document.getElementById("crumb")
       );
@@ -2380,7 +2446,6 @@ html.anim-ready .section {
         { passive: true },
       );
 
-      // mobile nav dropdown
       const nav = /** @type {HTMLElement} */ (document.getElementById("nav"));
       const navToggle = /** @type {HTMLButtonElement} */ (
         document.getElementById("navToggle")
@@ -2408,6 +2473,70 @@ html.anim-ready .section {
           e.target !== navToggle
         )
           setNav(false);
+      });
+
+      // colorscheme switch. sora and cendre are both mine, so the site is a live
+      // demo of each rather than a showcase of one. Every colour on the page goes
+      // through a token, so a theme is a :root block and nothing else.
+      /** @type {Record<string, string>} theme -> the browser chrome colour */
+      const THEME_BG = { sora: "#0e1018", cendre: "#171311" };
+      /** @type {Record<string, string>} theme -> its own site */
+      const THEME_SITE = {
+        sora: "https://soratheme.com/",
+        cendre: "https://cendretheme.com/",
+      };
+      /** @type {Record<string, string>} theme -> its recoloured avatar */
+      const THEME_AVATAR = {
+        sora: "assets/avatar.webp",
+        cendre: "assets/avatar-cendre.webp",
+      };
+      const themeSite = /** @type {HTMLAnchorElement} */ (
+        document.getElementById("themeSite")
+      );
+      const avatarImg = /** @type {HTMLImageElement} */ (
+        document.getElementById("avatar")
+      );
+      const themeBtn = /** @type {HTMLButtonElement} */ (
+        document.getElementById("themeToggle")
+      );
+      const themeName = /** @type {HTMLSpanElement} */ (
+        document.getElementById("themeName")
+      );
+      const themeMeta = /** @type {HTMLMetaElement} */ (
+        document.querySelector('meta[name="theme-color"]')
+      );
+      /**
+       * Apply a colorscheme and keep the label, the browser chrome and the stored
+       * preference in step. sora is the default, so it carries no attribute.
+       * @param {string} name
+       * @returns {void}
+       */
+      function setTheme(name) {
+        const t = THEME_BG[name] ? name : "sora";
+        if (t === "sora") delete document.documentElement.dataset.theme;
+        else document.documentElement.dataset.theme = t;
+        themeName.textContent = t;
+        themeSite.textContent = t;
+        themeSite.setAttribute("href", THEME_SITE[t]);
+        avatarImg.src = THEME_AVATAR[t];
+        themeMeta.setAttribute("content", THEME_BG[t]);
+        themeBtn.setAttribute(
+          "aria-label",
+          "colorscheme: " + t + ", press to switch",
+        );
+        try {
+          localStorage.setItem("theme", t);
+        } catch (e) {}
+      }
+      setTheme(document.documentElement.dataset.theme || "sora");
+      // warm the cache so switching avatars doesn't flash
+      Object.values(THEME_AVATAR).forEach((src) => {
+        new Image().src = src;
+      });
+      themeBtn.addEventListener("click", () => {
+        setTheme(
+          document.documentElement.dataset.theme === "cendre" ? "sora" : "cendre",
+        );
       });
 
       /** Keyboard shortcuts: 1-6 jump to sections, g/l/x/e trigger contact links. */
