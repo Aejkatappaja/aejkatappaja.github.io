@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>~/aejkatappaja · full-stack engineer &amp; OSS maintainer</title>
     <meta name="author" content="Aejkatappaja" />
-    <meta name="theme-color" content="#0e1018" />
+    <meta name="theme-color" content="#171311" />
     <script>
       // Runs before first paint on purpose: applying the stored colorscheme from
       // the script at the end of body would repaint the whole page in view.
-      // sora is the default, so the attribute is only ever set for cendre.
+      // cendre is the default; the attribute is dropped only for an explicit sora.
       try {
         var saved = localStorage.getItem("theme");
-        if (saved === "cendre") document.documentElement.dataset.theme = saved;
+        if (saved !== "sora") document.documentElement.dataset.theme = "cendre";
       } catch (e) {}
     </script>
     <meta
@@ -1389,10 +1389,10 @@ html.anim-ready .section {
             class="theme-toggle"
             id="themeToggle"
             data-key="t"
-            aria-label="colorscheme: sora, press to switch"
+            aria-label="colorscheme: cendre, press to switch"
             title="switch colorscheme"
           >
-            [<span class="tt-name" id="themeName">sora</span><span
+            [<span class="tt-name" id="themeName">cendre</span><span
               class="tt-ico"
               aria-hidden="true"
               >◐</span
@@ -1419,7 +1419,7 @@ html.anim-ready .section {
             <img
               class="avatar"
               id="avatar"
-              src="assets/avatar.webp"
+              src="assets/avatar-cendre.webp"
               alt="aejkatappaja avatar"
               width="96"
               height="96"
@@ -1950,7 +1950,8 @@ html.anim-ready .section {
               <p class="desc">
                 A cohesive colorscheme for Neovim, Obsidian and Zed, ported to
                 15+ more terminals and CLI tools (Ghostty, tmux, fzf, lazygit,
-                and more). Automated releases.
+                and more). Automated releases. Its warm companion, cendre, is
+                this page's other theme. Toggle it up top.
               </p>
               <div class="foot">
                 <ul class="tags chips">
@@ -2251,10 +2252,10 @@ html.anim-ready .section {
             <a
               class="theme-link"
               id="themeSite"
-              href="https://soratheme.com/"
+              href="https://cendretheme.com/"
               target="_blank"
               rel="noopener noreferrer"
-              >sora</a
+              >cendre</a
             ></span
           >
           <span>shell <b>zsh</b></span>
