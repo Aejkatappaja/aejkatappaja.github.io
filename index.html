@@ -1932,11 +1932,15 @@ html.anim-ready .section {
 
             <article class="tile">
               <div class="row1">
-                <h3 class="name"><span class="mn">05</span>sora</h3>
+                <h3 class="name">
+                  <span class="mn">05</span
+                  ><span id="themeProjName">cendre</span>
+                </h3>
                 <a
                   class="stars"
-                  href="https://github.com/Aejkatappaja/sora/stargazers"
-                  data-repo="Aejkatappaja/sora"
+                  id="themeProjStars"
+                  href="https://github.com/Aejkatappaja/cendre/stargazers"
+                  data-repo="Aejkatappaja/cendre"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-busy="true"
@@ -1947,11 +1951,12 @@ html.anim-ready .section {
                   <span class="star-n">stars</span>
                 </a>
               </div>
-              <p class="desc">
-                A cohesive colorscheme for Neovim, Obsidian and Zed, ported to
-                15+ more terminals and CLI tools (Ghostty, tmux, fzf, lazygit,
-                and more). Automated releases. Its warm companion, cendre, is
-                this page's other theme. Toggle it up top.
+              <p class="desc" id="themeProjDesc">
+                A dark colorscheme for Neovim, Obsidian and Zed, ported to 25+
+                more surfaces (Ghostty, tmux, fzf, lazygit, and more). Every hue
+                computed from a burning log, none of them picked by eye. Its
+                cool companion, sora, is this page's other theme. Toggle it up
+                top.
               </p>
               <div class="foot">
                 <ul class="tags chips">
@@ -1960,13 +1965,15 @@ html.anim-ready .section {
                 </ul>
                 <div class="links">
                   <a
-                    href="https://github.com/Aejkatappaja/sora"
+                    id="themeProjRepo"
+                    href="https://github.com/Aejkatappaja/cendre"
                     target="_blank"
                     rel="noopener noreferrer"
                     >repo <span aria-hidden="true">↗</span></a
                   >
                   <a
-                    href="https://soratheme.com/"
+                    id="themeProjSite"
+                    href="https://cendretheme.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                     >site <span aria-hidden="true">↗</span></a
@@ -2491,6 +2498,32 @@ html.anim-ready .section {
         sora: "assets/avatar.webp",
         cendre: "assets/avatar-cendre.webp",
       };
+      /**
+       * Project tile 05 is whichever colorscheme is on screen, so the card and
+       * the page always show the same theme. Site links come from THEME_SITE.
+       * @type {Record<string, {repo: string, desc: string}>}
+       */
+      const THEME_PROJECT = {
+        sora: {
+          repo: "Aejkatappaja/sora",
+          desc: "A cohesive colorscheme for Neovim, Obsidian and Zed, ported to 15+ more terminals and CLI tools (Ghostty, tmux, fzf, lazygit, and more). Automated releases. Its warm companion, cendre, is this page's other theme. Toggle it up top.",
+        },
+        cendre: {
+          repo: "Aejkatappaja/cendre",
+          desc: "A dark colorscheme for Neovim, Obsidian and Zed, ported to 25+ more surfaces (Ghostty, tmux, fzf, lazygit, and more). Every hue computed from a burning log, none of them picked by eye. Its cool companion, sora, is this page's other theme. Toggle it up top.",
+        },
+      };
+      const projName = document.getElementById("themeProjName");
+      const projDesc = document.getElementById("themeProjDesc");
+      const projStars = /** @type {HTMLAnchorElement} */ (
+        document.getElementById("themeProjStars")
+      );
+      const projRepo = /** @type {HTMLAnchorElement} */ (
+        document.getElementById("themeProjRepo")
+      );
+      const projSite = /** @type {HTMLAnchorElement} */ (
+        document.getElementById("themeProjSite")
+      );
       const themeSite = /** @type {HTMLAnchorElement} */ (
         document.getElementById("themeSite")
       );
@@ -2525,6 +2558,19 @@ html.anim-ready .section {
           "aria-label",
           "colorscheme: " + t + ", press to switch",
         );
+        const proj = THEME_PROJECT[t];
+        projName.textContent = t;
+        projDesc.textContent = proj.desc;
+        projRepo.href = "https://github.com/" + proj.repo;
+        projSite.href = THEME_SITE[t];
+        // the star count belongs to the repo, so it only refetches on a swap
+        if (projStars.dataset.repo !== proj.repo) {
+          projStars.dataset.repo = proj.repo;
+          projStars.href = "https://github.com/" + proj.repo + "/stargazers";
+          projStars.querySelector(".star-n").textContent = "stars";
+          projStars.setAttribute("aria-busy", "true");
+          loadStars(projStars);
+        }
         try {
           localStorage.setItem("theme", t);
         } catch (e) {}
